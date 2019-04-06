@@ -16,7 +16,7 @@ class Index extends Controller
     {
         if (Session::get("logged_name")) {
             if (Session::get("current_chat")) {
-                $this->redirect(url("index/chatroom/".Session::get("current_chat")));
+                $this->redirect("index/chatroom/room");
             } else {
                 $this->redirect(url("index/chatroom/index"));
             }
