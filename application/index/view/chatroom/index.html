@@ -51,12 +51,12 @@
                         <form method="post" action="{:url('chatroom/create_chatroom')}">
                             <div class="form-group">
                                 <label for="exampleInputEmail1">请输入聊天室名</label>
-                                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="聊天室名" name="chatroom_name">
+                                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="聊天室名" required autofocus name="chatroom_name">
                                 <small id="emailHelp" class="form-text text-muted">不能与当前聊天室重名</small>
                             </div>
                             <div class="form-group">
                                 <label for="exampleInputCounr">请输入聊天室最大人数</label>
-                                <input type="number" min="2" class="form-control" id="exampleInputCounr" aria-describedby="emailHelp" placeholder="聊天室最大人数" name="chatroom_max">
+                                <input type="number" min="2" class="form-control" id="exampleInputCounr" aria-describedby="emailHelp" placeholder="聊天室最大人数" required name="chatroom_max">
                             </div>
                             <button type="submit" class="btn btn-primary">提交</button>
                         </form>
