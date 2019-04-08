@@ -9,12 +9,23 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-Route::get('think', function () {
-    return 'hello,ThinkPHP5!';
-});
+//Route::get('think', function () {
+//    return 'hello,ThinkPHP5!';
+//});
+//
+//Route::get('hello/:name', 'index/hello');
+Route::get('/', 'chatroom/index/index');
+Route::post('checkip', 'chatroom/index/checkip');
+Route::get('chatroom/index', 'chatroom/chatroom/index');
+Route::get('chatroom/to_index', 'chatroom/chatroom/to_index');
+Route::get('chatroom/list_chatroom', 'chatroom/chatroom/list_chatroom');
+Route::get('chatroom/logout', 'chatroom/chatroom/logout');
+Route::get('chatroom/join_room/:id', 'chatroom/chatroom/join_room');
+Route::post('chatroom/create_chatroom', 'chatroom/chatroom/create_chatroom');
 
-Route::get('hello/:name', 'index/hello');
-
+Route::get('chatroom/room/:id', 'chatroom/chatroom/room');
+Route::get('chatroom/get_message', 'chatroom/chatroom/get_message');
+Route::post('chatroom/post_message', 'chatroom/chatroom/post_message');
 return [
 
 ];

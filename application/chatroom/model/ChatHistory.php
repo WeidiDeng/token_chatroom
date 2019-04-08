@@ -1,5 +1,5 @@
 <?php
-namespace app\index\model;
+namespace app\chatroom\model;
 
 use think\Model;
 

@@ -1,8 +1,8 @@
 <?php
-namespace app\index\controller;
+namespace app\chatroom\controller;
 
-use app\index\model\Ip;
-use app\index\model\OnlineUser;
+use app\chatroom\model\Ip;
+use app\chatroom\model\OnlineUser;
 use think\Controller;
 use think\facade\Session;
 // +----------------------------------------------------------------------
@@ -15,10 +15,11 @@ class Index extends Controller
     protected function initialize()
     {
         if (Session::get("logged_name")) {
-            if (Session::get("current_chat")) {
-                $this->redirect("index/chatroom/room");
+            $chatroom_id = Session::get("current_chat");
+            if ($chatroom_id) {
+                $this->redirect("chatroom/chatroom/room", ["id"=>$chatroom_id]);
             } else {
-                $this->redirect(url("index/chatroom/index"));
+                $this->redirect("chatroom/chatroom/index");
             }
         }
     }
@@ -30,19 +31,18 @@ class Index extends Controller
     }
     public function checkip()
     {
-        $param = input('post.');
-        if(empty($param['name'])){
+        $name = input('post.name');
+        if(empty($name)){
             $this->error('昵称不能为空');
         }
-        $ip = new Ip();
-        $result = $ip::get(["ip"=>request()->ip()]);
+        $result = Ip::get(["ip"=>request()->ip()]);
         if (empty($result)||strtotime($result->block_end)<time()) {
-            Session::set("logged_name", $param['name']);
+            Session::set("logged_name", $name);
             OnlineUser::create([
                 'sess_id'=>cookie('PHPSESSID'),
-                'name'=>$param['name']
-            ], ['sess_id', 'name'], true);
-            $this->success("登陆成功", url("index/chatroom/index"));
+                'name'=>$name
+            ], ['sess_id', 'name']);
+            $this->success("登陆成功", "chatroom/chatroom/index");
         } else {
             $this->error("你ip被封禁，请联系管理员解禁");
         }

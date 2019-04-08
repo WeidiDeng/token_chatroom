@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>聊天室列表</title>
+    <title>聊天室{$chatroom_name}</title>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="/static/js/list_chat.js"></script>
+    <script src="/static/js/chat.js"></script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -22,17 +22,17 @@
                     <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">{$user_name}</a>
                 </li>
                 <li class="nav-item mr-auto">
-                    <a class="nav-link disabled" href="#">返回聊天室列表</a>
+                    <a class="nav-link" href="/chatroom/to_index">返回聊天室列表</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         功能
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">刷新聊天室列表</a>
-                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#exampleModal">新建聊天室</a>
+                        <a class="dropdown-item disabled" href="#">刷新聊天室列表</a>
+                        <a class="dropdown-item disabled" href="#" data-toggle="modal" data-target="#exampleModal">新建聊天室</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{:url('chatroom/logout')}">退出登陆</a>
+                        <a class="dropdown-item" href="/chatroom/logout">退出登陆</a>
                     </div>
                 </li>
 
@@ -48,15 +48,11 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form method="post" action="{:url('chatroom/create_chatroom')}">
+                        <form method="post" action="/chatroom/create_chatroom">
                             <div class="form-group">
                                 <label for="exampleInputEmail1">请输入聊天室名</label>
-                                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="聊天室名" required autofocus name="chatroom_name">
+                                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="聊天室名" name="chatroom_name">
                                 <small id="emailHelp" class="form-text text-muted">不能与当前聊天室重名</small>
-                            </div>
-                            <div class="form-group">
-                                <label for="exampleInputCounr">请输入聊天室最大人数</label>
-                                <input type="number" min="2" class="form-control" id="exampleInputCounr" aria-describedby="emailHelp" placeholder="聊天室最大人数" required name="chatroom_max">
                             </div>
                             <button type="submit" class="btn btn-primary">提交</button>
                         </form>
@@ -69,8 +65,18 @@
         </div>
     </nav>
 
-    <div class="container">
-        <ul class="list-group">
+    <div class="container col-sm-6">
+        <form method="post" id="post_message">
+            <div class="form-group">
+                <label for="exampleFormControlTextarea2">请输入聊天内容</label>
+                <textarea class="form-control rounded-0" id="exampleFormControlTextarea2" rows="3" style="resize: none" maxlength="255" name="message"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary">发送消息</button>
+        </form>
+    </div>
+
+    <div class="container col-sm-6">
+        <ul class="list-group" id="messageList">
         </ul>
     </div>
 </body>
