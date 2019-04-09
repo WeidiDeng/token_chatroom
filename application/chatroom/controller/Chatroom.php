@@ -3,6 +3,7 @@ namespace app\chatroom\controller;
 
 use app\chatroom\model\Blacklist;
 use app\chatroom\model\ChatHistory;
+use app\chatroom\model\Ip;
 use think\Controller;
 use think\facade\Session;
 
@@ -23,7 +24,7 @@ class Chatroom extends Controller
         if (!Session::get("logged_name")) {
             $this->redirect(url("/"));
         }
-        // 更新cookie和session有效时常
+        // 更新cookie和session有效时长
         $sessid = cookie('PHPSESSID');
         cookie('PHPSESSID', $sessid, 300);
         $res = OnlineUser::get(['sess_id'=>$sessid]);
@@ -43,7 +44,7 @@ class Chatroom extends Controller
     {
         $chatroom = Session::get("current_chat");
         if ($chatroom) {
-            $this->redirect("room", ["id"=>$chatroom]);
+            $this->redirect("chatroom/room/".$chatroom);
         }
     }
 
@@ -51,6 +52,7 @@ class Chatroom extends Controller
     {
         $chat = Session::get("current_chat");
         if ($chat) {
+            Session::set("current_chat",null);
             ChatHistory::create([
                 "chatroom_id"=>$chat,
                 "name"=>Session::get("logged_name"),
@@ -58,6 +60,12 @@ class Chatroom extends Controller
                 "content"=>Session::get("logged_name")."已离开聊天室"
             ]);
             ChatroomModel::get(['id'=>$chat])->setDec("count");
+            Session::set("current_chat", null);
+
+            $sessid = cookie('PHPSESSID');
+            $res = OnlineUser::get(['sess_id'=>$sessid]);
+            $res->chatroom_id = 0;
+            $res->save();
         }
     }
     public function index() {
@@ -102,7 +110,7 @@ class Chatroom extends Controller
     {
         $old_id = Session::get("current_chat");
         if ($old_id!=$id) {
-            $this->redirect("chatroom/room", ["id"=>$old_id]);
+            $this->redirect("chatroom/room/".$old_id);
         }
         $this->assign('user_name', Session::get("logged_name"));
         $this->assign("chatroom_name",ChatroomModel::get(["id"=>$id])->name);
@@ -112,11 +120,18 @@ class Chatroom extends Controller
     public function join_room($id)
     {
         $res = ChatroomModel::get(['id'=>$id]);
-        if (empty($res)) {
+        if (empty($res)||$res->count==0) {
             $this->error("聊天室不存在");
         }
         if ($res->count == $res->max_count) {
             $this->error("聊天室已满");
+        }
+        $dup_user = OnlineUser::where([
+            ["name", "eq", Session::get("logged_name")],
+            ["chatroom_id", "eq", $id]
+        ])->select();
+        if (count($dup_user)>0) {
+            $this->error("聊天室已有重名用户");
         }
         Session::set("current_chat", $id);
         ChatHistory::create([
@@ -151,7 +166,25 @@ class Chatroom extends Controller
         $black_list = Blacklist::all()->column("content");
         foreach ($black_list as $black_word) {
             if (strpos($message, $black_word)!==false) {
-                return json(array("code"=>-1,"msg"=>"敏感词"));
+                $ip_blocked = Ip::get(["ip"=>request()->ip()]);
+                if (empty($ip_blocked)) {
+                    Ip::create([
+                        "triggered"=>1
+                    ]);
+                    return json(array("code"=>-1,"msg"=>"敏感词"));
+                } else if ($ip_blocked->triggered==2) {
+                    $ip_blocked->triggered=0;
+                    $ip_blocked->block_end=date('Y-m-d H:i:s', time()+300);
+                    $ip_blocked->block_count++;
+                    $ip_blocked->save();
+                    $this->leave_chatroom();
+                    Session::clear();
+                    cookie('PHPSESSID',null);
+                    return json(array("code"=>-3,"msg"=>"你的ip地址被封禁"));
+                } else {
+                    $ip_blocked->setInc("triggered");
+                    return json(array("code"=>-2,"msg"=>"消息中有敏感词"));
+                }
             }
         }
 

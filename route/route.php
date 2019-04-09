@@ -26,6 +26,13 @@ Route::post('chatroom/create_chatroom', 'chatroom/chatroom/create_chatroom');
 Route::get('chatroom/room/:id', 'chatroom/chatroom/room');
 Route::get('chatroom/get_message', 'chatroom/chatroom/get_message');
 Route::post('chatroom/post_message', 'chatroom/chatroom/post_message');
+
+Route::get('admin/', 'admin/index/login');
+Route::get('admin/index', 'admin/index/index');
+Route::post('admin/do_login', 'admin/index/do_login');
+Route::get('admin/logout', 'admin/index/logout');
+Route::get('admin/unblock/:id', 'admin/index/unblock');
+
 return [
 
 ];

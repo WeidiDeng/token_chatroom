@@ -15,12 +15,7 @@ class Index extends Controller
     protected function initialize()
     {
         if (Session::get("logged_name")) {
-            $chatroom_id = Session::get("current_chat");
-            if ($chatroom_id) {
-                $this->redirect("chatroom/chatroom/room", ["id"=>$chatroom_id]);
-            } else {
-                $this->redirect("chatroom/chatroom/index");
-            }
+            $this->redirect("chatroom");
         }
     }
 

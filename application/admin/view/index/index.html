@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员界面</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+    <a href="/admin/logout">退出登录</a><br>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <tr>
+                <th>ip地址</th>
+                <th>触发违禁词次数</th>
+                <th>是否封禁</th>
+                <th>封禁解除时间</th>
+                <th>封禁次数</th>
+                <th>解除封禁</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach $ip_list as $key=>$vo}
+            <tr>
+                <td>{$vo.ip}</td>
+                <td>{$vo.triggered}</td>
+                <td>
+                {if strtotime($vo.block_end)>time()}是
+                    {else /}否
+                {/if}
+                </td>
+                <td>{$vo.block_end}</td>
+                <td>{$vo.block_count}</td>
+                <td>
+                {if strtotime($vo.block_end)>time()}
+                    <a href="/admin/unblock/{$vo.id}">解除封禁</a>
+                {/if}
+                </td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
