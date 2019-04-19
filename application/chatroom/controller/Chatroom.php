@@ -79,29 +79,19 @@ class Chatroom extends Controller
     }
     public function create_chatroom()
     {
-        $chatroom_name = input("post.chatroom_name");
-        $chatroom_max = input("post.chatroom_max");
-        if (empty($chatroom_name)) {
-            $this->error("聊天室名不能为空");
+        $data = [
+            "chatroom_name"=>input("post.chatroom_name"),
+            "chatroom_max"=>input("post.chatroom_max")
+        ];
+        $validate = new \app\chatroom\validate\Chatroom;
+        if (!$validate->check($data)) {
+            $this->error($validate->getError());
         }
-        if (empty($chatroom_max)) {
-            $this->error("聊天室最大人数不能为空");
-        }
-        $dup_query = ChatroomModel::where([
-            ['name','eq' ,$chatroom_name],
-            ['count', '>', 0]
-        ])->select();
-        if (count($dup_query)>0) {
-            $this->error("聊天室名不能重复");
-        }
-        ChatroomModel::create([
-            "name" => $chatroom_name,
-            "max_count"=>$chatroom_max
+        $chatroom = new ChatroomModel([
+            "name" => input("post.chatroom_name"),
+            "max_count"=>input("post.chatroom_max")
         ]);
-        $chatroom = ChatroomModel::where([
-            ['name','eq' ,$chatroom_name],
-            ['count', '>', 0]
-        ])->find();
+        $chatroom->save();
         Session::set("current_chat", $chatroom->id);
         $this->redirect("/chatroom/room/".$chatroom->id);
     }
