@@ -22,7 +22,7 @@ $(function () {
                             "                        "+ value.name +"\n" +
                             "                    </div>\n" +
                             "                    <div class=\"text-center\">\n" +
-                            "                        "+ value.content +"\n" +
+                            "                        "+ $('<div/>').text(value.content).html() +"\n" +
                             "                    </div>\n" +
                             "                    <div class=\"float-right\">\n" +
                             "                        "+ value.sent_time +"\n" +
@@ -49,6 +49,7 @@ $(function () {
         })
     }
     $("#post_message>button").click(function () {
+        $("#post_message>button")[0].disabled = true
         var post_data = $('#post_message').serialize();
         $.ajax({
             url:"/chatroom/post_message",
@@ -59,14 +60,14 @@ $(function () {
                 withCredentials:true
             },
             success:function (data) {
-                if (data.code!=0) {
+                if (data.code!==0) {
                     alert(data.msg)
                 } else {
-                    show_message()
                     $("#post_message textarea").val("")
                 }
             }
         })
+        $("#post_message>button")[0].disabled = false
     })
     show_message()
     window.setInterval(show_message, 1000)
